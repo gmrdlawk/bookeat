@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daylight Numbers</title>
+    <style>
+      :root {
+        --bg: #e8c39a;
+        --panel: #f4ece4;
+        --panel-2: #f1e9e0;
+        --text: #1c1b1a;
+        --muted: #4a4540;
+        --line: rgba(28, 27, 26, 0.8);
+        --shadow: rgba(37, 30, 22, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      body {
+        min-height: 100vh;
+      }
+
+      .page {
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      /* 상단 헤더 */
+      .topbar {
+        height: 74px;
+        border-bottom: 1px solid rgba(0,0,0,0.2);
+        background: rgba(255,255,255,0.02);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 28px 0 32px;
+      }
+
+      .brand-wrap {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .brand-mark {
+        width: 16px;
+        height: 16px;
+        position: relative;
+      }
+
+      .brand-mark::before,
+      .brand-mark::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 10px;
+        height: 10px;
+        transform: translate(-50%, -50%) rotate(45deg);
+        border: 1.5px solid #1d1d1d;
+        border-radius: 50%;
+        opacity: 0.8;
+      }
+
+      .brand-mark::after {
+        width: 4px;
+        height: 4px;
+        transform: translate(-50%, -50%) rotate(45deg);
+        background: transparent;
+      }
+
+      .menu {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        font-size: 14px;
+        color: #282522;
+      }
+
+      .menu a {
+        text-decoration: none;
+        color: #1e1d1b;
+        font-weight: 500;
+      }
+
+      .menu a:hover { opacity: 0.7; }
+
+      .cta {
+        border: 1px solid rgba(0,0,0,0.8);
+        background: rgba(0,0,0,0.02);
+        border-radius: 999px;
+        padding: 10px 18px;
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: #1d1c1a;
+        text-decoration: none;
+      }
+
+      /* 메인 */
+      .main {
+        padding-top: 28px;
+      }
+
+      .hero {
+        text-align: center;
+        padding-top: 40px;
+      }
+
+      .hero-icon {
+        width: 260px;
+        margin: 0 auto 18px;
+        display: block;
+      }
+
+      .hero-title {
+        margin: 0;
+        font-size: clamp(2.3rem, 3vw, 4rem);
+        font-weight: 500;
+        letter-spacing: -0.04em;
+        line-height: 1.1;
+      }
+
+      .hero-sub {
+        margin: 14px auto 0;
+        max-width: 680px;
+        font-size: 18px;
+        line-height: 1.6;
+        color: rgba(28,27,26,0.8);
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        font-weight: 400;
+      }
+
+      .stats {
+        width: min(980px, 80%);
+        margin: 46px auto 0;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(200px, 1fr));
+        gap: 26px;
+      }
+
+      .stat-card {
+        background: rgba(255,255,255,0.1);
+        border-radius: 18px;
+        border: 1px solid rgba(0,0,0,0.08);
+        box-shadow: 0 2px 0 rgba(0,0,0,0.02);
+        min-height: 202px;
+        padding: 28px 30px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: left;
+      }
+
+      .stat-card:nth-child(2) {
+        background: rgba(255,255,255,0.08);
+      }
+
+      .stat-value {
+        font-size: clamp(2.2rem, 2vw, 4rem);
+        line-height: 1;
+        margin: 0 0 10px 0;
+        font-weight: 500;
+        letter-spacing: -0.04em;
+      }
+
+      .stat-copy {
+        color: rgba(28,27,26,0.8);
+        font-size: 15px;
+        line-height: 1.5;
+        max-width: 245px;
+        font-family: "Segoe UI", Tahoma, sans-serif;
+      }
+
+      .clients {
+        margin-top: 72px;
+        padding-bottom: 80px;
+        text-align: center;
+      }
+
+      .clients h2 {
+        margin: 0;
+        font-size: clamp(2.1rem, 3vw, 4rem);
+        font-weight: 500;
+        letter-spacing: -0.04em;
+        line-height: 1.2;
+      }
+
+      @media (max-width: 900px) {
+        .menu {
+          gap: 16px;
+          font-size: 12px;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        .topbar {
+          height: auto;
+          padding: 18px 20px;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+
+        .stats {
+          width: min(90%, 620px);
+          grid-template-columns: 1fr;
+        }
+
+        .stat-copy {
+          max-width: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <!-- 네비게이션 목록 HTML은 다음 메시지에서 정리 -->
+        <div class="brand-wrap">
+          <span class="brand-mark"></span>
+        </div>
+
+        <nav class="menu" aria-label="Main navigation">
+          <a href="#">How it Works</a>
+          <a href="#">Services</a>
+          <a href="#">Our Medical Director</a>
+          <a href="#">Our Providers</a>
+          <a href="#">Partner With Us</a>
+          <a href="#">Patient Testimonials</a>
+          <a href="#">Patient Portal</a>
+        </nav>
+
+        <a class="cta" href="#">Get Started</a>
+      </header>
+
+      <main class="main">
+        <section class="hero">
+          <svg class="hero-icon" viewBox="0 0 320 160" aria-label="Daylight illustration" role="img">
+            <g fill="none" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <!-- calendar -->
+              <rect x="80" y="44" width="80" height="58" rx="2" />
+              <path d="M90 34V56M150 34V56M80 52H160" />
+              <line x1="92" y1="72" x2="112" y2="72" />
+              <line x1="118" y1="72" x2="136" y2="72" />
+              <line x1="92" y1="84" x2="110" y2="84" />
+              <line x1="118" y1="84" x2="136" y2="84" />
+              <line x1="92" y1="96" x2="104" y2="96" />
+
+              <!-- small shelf -->
+              <path d="M170 48h80v18h-80z" />
+              <path d="M190 48v60M210 48v60M230 48v60M170 66h80" />
+
+              <!-- plant -->
+              <path d="M160 98V68" />
+              <path d="M150 78c-14 0-20 12-20 18 0 10 8 18 18 18 7 0 14-5 18-14" />
+              <path d="M170 78c14 0 20 12 20 18 0 10-8 18-18 18-7 0-14-5-18-14" />
+              <path d="M160 86c-10-6-12-18-10-26 10 2 18 8 22 18" />
+              <path d="M160 86c10-6 12-18 10-26-10 2-18 8-22 18" />
+              <path d="M160 96v32" />
+              <path d="M148 122h24" />
+            </g>
+          </svg>
+
+          <h1 class="hero-title">By the Numbers</h1>
+          <p class="hero-sub">
+            Proven care, powerful results. Daylight Health protocols and care programs are designed by leading physicians with decades of experience in psychiatry, psychology, primary care, and women's health.
+          </p>
+        </section>
+
+        <section class="stats" aria-label="Key metrics">
+          <article class="stat-card">
+            <h3 class="stat-value">35%</h3>
+            <div class="stat-copy">
+              After 3 months with Daylight, patients see a 35% improvement in mental health assessment scores
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <h3 class="stat-value">95%</h3>
+            <div class="stat-copy">
+              95% of Daylight patients report a significant improvement in their quality of life.
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <h3 class="stat-value">5 Months</h3>
+            <div class="stat-copy">
+              Our average patient receives care for an average of 5 months, with some as long as 24 months
+            </div>
+          </article>
+        </section>
+
+        <section class="clients">
+          <h2>Hear from real Daylight Clients</h2>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
