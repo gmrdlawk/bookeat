@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>사진 관리 | 책먹</title>
+  <style>
+    :root {
+      --sky: #cfeeff;
+      --sky-deep: #b9dff7;
+      --forest: #1f5b4d;
+      --forest-deep: #123f37;
+      --tangerine: #f58b3d;
+      --tangerine-deep: #e86e1d;
+      --white: #ffffff;
+      --muted: #4f6b63;
+      --line: rgba(31, 91, 77, 0.18);
+      --bg-soft: rgba(255,255,255,0.25);
+      --shadow: 0 16px 30px rgba(18,63,55,0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", "Noto Sans KR", sans-serif;
+      background: linear-gradient(180deg, var(--sky) 0%, #eaf7ff 100%);
+      color: var(--forest-deep);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    .container { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+    .topbar {
+      position: sticky; top: 0; z-index: 20;
+      background: rgba(207, 238, 255, 0.82); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      height: 80px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 900; }
+    .brand-mark {
+      width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px;
+      background: var(--tangerine); color: #fff;
+    }
+    .nav { display: flex; align-items: center; gap: 24px; color: var(--forest); font-weight: 600; }
+    .nav a { position: relative; }
+    .nav a::after {
+      content: ""; position: absolute; left: 0; bottom: -7px; width: 100%; height: 2px; background: var(--tangerine);
+      transform: scaleX(0); transform-origin: left; transition: transform 0.2s ease;
+    }
+    .nav a:hover::after { transform: scaleX(1); }
+    .header-btn {
+      display: inline-flex; align-items: center; justify-content: center; height: 42px; padding: 0 18px;
+      border-radius: 999px; background: var(--tangerine); color: #fff; font-weight: 800;
+    }
+    .page { padding: 42px 0 72px; }
+    .hero {
+      padding: 28px 26px; background: rgba(255,255,255,0.18); border: 1px solid var(--line);
+      border-radius: 28px; margin-bottom: 26px;
+    }
+    .hero h1 { font-size: clamp(2.2rem, 5vw, 4rem); letter-spacing: -0.06em; margin-bottom: 8px; }
+    .hero p { color: var(--muted); max-width: 64ch; }
+    .panel-grid { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 24px; }
+    .panel {
+      background: var(--bg-soft); border: 1px solid var(--line); border-radius: 28px; padding: 24px;
+      box-shadow: var(--shadow);
+    }
+    .panel h2 { margin-bottom: 14px; font-size: 1.5rem; letter-spacing: -0.05em; }
+    .field { display: grid; gap: 8px; margin-bottom: 14px; }
+    label {
+      font-size: 0.86rem; font-weight: 700; color: var(--muted);
+    }
+    input[type="text"], textarea, input[type="file"] {
+      width: 100%; border: 1px solid rgba(31, 91, 77, 0.14); border-radius: 14px; padding: 12px 14px;
+      background: rgba(255,255,255,0.35); color: var(--forest-deep); font: inherit;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    .button-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    button {
+      border: none; border-radius: 14px; background: var(--tangerine); color: #fff; padding: 12px 18px;
+      font: inherit; font-weight: 800; cursor: pointer;
+    }
+    .ghost-btn { background: rgba(31,91,77,0.08); color: var(--forest); }
+    .preview-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .photo-card { border: 1px solid var(--line); background: rgba(255,255,255,0.28); border-radius: 20px; overflow: hidden; }
+    .photo-card img { width: 100%; height: 220px; object-fit: cover; }
+    .photo-info { padding: 12px 14px 14px; }
+    .photo-info h3 { margin: 0 0 6px; font-size: 1rem; }
+    .photo-info p { margin: 0 0 10px; color: var(--muted); font-size: 0.88rem; }
+    .card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .mini-btn { padding: 8px 10px; border-radius: 10px; font-size: 0.82rem; }
+    .mini-btn.secondary { background: rgba(31,91,77,0.08); color: var(--forest); }
+    .mini-btn.danger { background: rgba(148, 42, 42, 0.12); color: #702d2d; }
+    .empty-state {
+      padding: 26px 20px; border: 1px dashed rgba(31,91,77,0.22); border-radius: 18px; color: var(--muted); text-align: center;
+    }
+    @media (max-width: 800px) {
+      .panel-grid { grid-template-columns: 1fr; }
+      .nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a href="bookeat.html" class="brand" aria-label="책먹 홈">
+        <span class="brand-mark">책</span>
+        <span>책먹</span>
+      </a>
+      <nav class="nav" aria-label="메인 네비게이션">
+        <a href="bookeat.html">홈</a>
+        <a href="bookeat.html#gallery">사진</a>
+      </nav>
+      <a href="bookeat.html#contact" class="header-btn">모임 보러가기</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container">
+      <section class="hero">
+        <h1>사진 업로드 & 관리</h1>
+        <p>책먹의 대표 이미지, 행사 사진, 추천 도서 포스터와 함께하는 장면을 관리할 수 있는 전용 페이지입니다.</p>
+      </section>
+
+      <section class="panel-grid">
+        <div class="panel">
+          <h2>사진 추가</h2>
+          <form id="photoForm">
+            <div class="field">
+              <label for="photoTitle">제목</label>
+              <input id="photoTitle" type="text" maxlength="40" placeholder="예: 6월 책먹 모임" />
+            </div>
+            <div class="field">
+              <label for="photoCaption">설명</label>
+              <textarea id="photoCaption" maxlength="200" placeholder="예: 책과 사람을 만나는 오붓한 시간"></textarea>
+            </div>
+            <div class="field">
+              <label for="photoInput">사진 선택</label>
+              <input id="photoInput" type="file" accept="image/*" multiple />
+            </div>
+            <div class="button-row">
+              <button type="submit">사진 저장</button>
+              <button type="reset" class="ghost-btn">초기화</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel">
+          <h2>업로드된 사진</h2>
+          <div id="photoList" class="preview-box"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const STORAGE_KEY = 'bookeat.gallery';
+    const HERO_KEY = 'bookeat.heroImage';
+    const photoForm = document.getElementById('photoForm');
+    const photoInput = document.getElementById('photoInput');
+    const photoTitle = document.getElementById('photoTitle');
+    const photoCaption = document.getElementById('photoCaption');
+    const photoList = document.getElementById('photoList');
+
+    function readSavedPhotos() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        return Array.isArray(saved) ? saved : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function writeSavedPhotos(items) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    }
+
+    function renderPhotos() {
+      const items = readSavedPhotos();
+      if (!items.length) {
+        photoList.innerHTML = '<div class="empty-state">아직 업로드된 사진이 없습니다.<br>대표 이미지와 모임 사진을 추가해보세요.</div>';
+        return;
+      }
+
+      photoList.innerHTML = items.map((item) => `
+        <article class="photo-card">
+          <img src="${item.src}" alt="${item.title || '업로드 이미지'}" />
+          <div class="photo-info">
+            <h3>${item.title || '이미지'}</h3>
+            <p>${item.caption || '사진 설명이 아직 없습니다.'}</p>
+            <div class="card-actions">
+              <button class="mini-btn secondary" data-role="hero" data-id="${item.id}">대표 이미지</button>
+              <button class="mini-btn danger" data-role="delete" data-id="${item.id}">삭제</button>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    photoForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+      const files = [...photoInput.files];
+      if (!files.length) {
+        alert('업로드할 사진을 선택해 주세요.');
+        return;
+      }
+
+      const existing = readSavedPhotos();
+      files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = function () {
+          existing.push({
+            id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+            title: photoTitle.value.trim() || '새 사진',
+            caption: photoCaption.value.trim() || '모임 사진',
+            src: reader.result,
+            createdAt: new Date().toISOString()
+          });
+          writeSavedPhotos(existing);
+          renderPhotos();
+        };
+        reader.readAsDataURL(file);
+      });
+
+      photoForm.reset();
+    });
+
+    photoList.addEventListener('click', function (event) {
+      const button = event.target.closest('button');
+      if (!button) return;
+      const id = button.dataset.id;
+      const role = button.dataset.role;
+      const items = readSavedPhotos();
+
+      if (role === 'delete') {
+        const filtered = items.filter((item) => item.id !== id);
+        writeSavedPhotos(filtered);
+        const hero = localStorage.getItem(HERO_KEY);
+        if (hero && filtered.every((item) => item.src !== hero)) {
+          localStorage.removeItem(HERO_KEY);
+        }
+        renderPhotos();
+        return;
+      }
+
+      if (role === 'hero') {
+        const target = items.find((item) => item.id === id);
+        if (target) {
+          localStorage.setItem(HERO_KEY, target.src);
+          renderPhotos();
+        }
+      }
+    });
+
+    renderPhotos();
+  </script>
+</body>
+</html>
